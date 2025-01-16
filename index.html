@@ -43,6 +43,15 @@
             font-size: 1rem;
             color: #555;
         }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        select {
+            padding: 5px;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -68,22 +77,106 @@
             <div class="emoji">🎉</div>
             <div class="label">Party Popper</div>
         </div>
+        <div class="emoji-item" data-label="Face with Tears of Joy">
+            <div class="emoji">😂</div>
+            <div class="label">Face with Tears of Joy</div>
+        </div>
+        <div class="emoji-item" data-label="Clapping Hands">
+            <div class="emoji">👏</div>
+            <div class="label">Clapping Hands</div>
+        </div>
+        <div class="emoji-item" data-label="Fire">
+            <div class="emoji">🔥</div>
+            <div class="label">Fire</div>
+        </div>
+        <div class="emoji-item" data-label="Grinning Face">
+            <div class="emoji">😀</div>
+            <div class="label">Grinning Face</div>
+        </div>
+        <div class="emoji-item" data-label="Face Blowing a Kiss">
+            <div class="emoji">😘</div>
+            <div class="label">Face Blowing a Kiss</div>
+        </div>
+        <div class="emoji-item" data-label="Thinking Face">
+            <div class="emoji">🤔</div>
+            <div class="label">Thinking Face</div>
+        </div>
+        <div class="emoji-item" data-label="Folded Hands">
+            <div class="emoji">🙏</div>
+            <div class="label">Folded Hands</div>
+        </div>
+        <div class="emoji-item" data-label="Victory Hand">
+            <div class="emoji">✌️</div>
+            <div class="label">Victory Hand</div>
+        </div>
+        <div class="emoji-item" data-label="Star-Struck">
+            <div class="emoji">🤩</div>
+            <div class="label">Star-Struck</div>
+        </div>
+        <div class="emoji-item" data-label="Face with Sunglasses">
+            <div class="emoji">😎</div>
+            <div class="label">Face with Sunglasses</div>
+        </div>
+        <div class="emoji-item" data-label="Face Screaming in Fear">
+            <div class="emoji">😱</div>
+            <div class="label">Face Screaming in Fear</div>
+        </div>
+        <div class="emoji-item" data-label="Face with Rolling Eyes">
+            <div class="emoji">🙄</div>
+            <div class="label">Face with Rolling Eyes</div>
+        </div>
+        <div class="emoji-item" data-label="Winking Face">
+            <div class="emoji">😉</div>
+            <div class="label">Winking Face</div>
+        </div>
+        <div class="emoji-item" data-label="Face Blowing a Kiss">
+            <div class="emoji">😘</div>
+            <div class="label">Face Blowing a Kiss</div>
+        </div>
+        <div class="emoji-item" data-label="Sleeping Face">
+            <div class="emoji">😴</div>
+            <div class="label">Sleeping Face</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <label for="voiceSelect">Choose a voice: </label>
+        <select id="voiceSelect"></select>
     </div>
 
     <script>
-        // Function to speak the text
+        let voices = [];
+
+        function populateVoices() {
+            voices = window.speechSynthesis.getVoices();
+            const voiceSelect = document.getElementById('voiceSelect');
+            voiceSelect.innerHTML = '';
+            voices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                voiceSelect.appendChild(option);
+            });
+        }
+
         function speakText(text) {
             const utterance = new SpeechSynthesisUtterance(text);
+            const selectedVoiceIndex = document.getElementById('voiceSelect').value;
+            if (voices[selectedVoiceIndex]) {
+                utterance.voice = voices[selectedVoiceIndex];
+            }
             window.speechSynthesis.speak(utterance);
         }
 
-        // Add event listeners to emoji items
         document.querySelectorAll('.emoji-item').forEach(item => {
             item.addEventListener('click', () => {
                 const label = item.getAttribute('data-label');
                 speakText(label);
             });
         });
+
+        window.speechSynthesis.onvoiceschanged = populateVoices;
+        populateVoices();
     </script>
 </body>
 </html>
