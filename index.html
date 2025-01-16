@@ -24,18 +24,20 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            border: 2px solid transparent;
-            padding: 10px;
+            border: 2px solid #007BFF;
+            width: var(--emoji-size, 100px);
+            height: var(--emoji-size, 100px);
+            justify-content: center;
             border-radius: 8px;
             transition: border-color 0.3s;
         }
 
         .emoji-item:hover {
-            border-color: #007BFF;
+            border-color: #0056b3;
         }
 
         .emoji {
-            font-size: 3rem;
+            font-size: calc(var(--emoji-size, 100px) / 2);
         }
 
         .label {
@@ -48,15 +50,26 @@
             margin-top: 20px;
         }
 
-        select {
+        select, button {
             padding: 5px;
             font-size: 1rem;
+            margin: 5px;
         }
     </style>
 </head>
 <body>
     <h1>Click an Emoji to Hear Its Name</h1>
-    <div class="emoji-container">
+
+    <div class="controls">
+        <button id="decreaseSize">-</button>
+        <button id="increaseSize">+</button>
+        <button id="sortAscending">Sort A-Z</button>
+        <button id="sortDescending">Sort Z-A</button>
+        <label for="voiceSelect">Choose a voice: </label>
+        <select id="voiceSelect"></select>
+    </div>
+
+    <div class="emoji-container" id="emojiContainer">
         <div class="emoji-item" data-label="Smiling Face">
             <div class="emoji">😊</div>
             <div class="label">Smiling Face</div>
@@ -97,106 +110,39 @@
             <div class="emoji">🦞</div>
             <div class="label">Lobster</div>
         </div>
-        <div class="emoji-item" data-label="Fox">
-            <div class="emoji">🦊</div>
-            <div class="label">Fox</div>
-        </div>
-        <div class="emoji-item" data-label="Pig">
-            <div class="emoji">🐷</div>
-            <div class="label">Pig</div>
-        </div>
-        <div class="emoji-item" data-label="Cow">
-            <div class="emoji">🐮</div>
-            <div class="label">Cow</div>
-        </div>
-        <div class="emoji-item" data-label="Elephant">
-            <div class="emoji">🐘</div>
-            <div class="label">Elephant</div>
-        </div>
-        <div class="emoji-item" data-label="Heart">
-            <div class="emoji">❤️</div>
-            <div class="label">Heart</div>
-        </div>
-        <div class="emoji-item" data-label="Diamond">
-            <div class="emoji">💎</div>
-            <div class="label">Diamond</div>
-        </div>
-        <div class="emoji-item" data-label="Frog">
-            <div class="emoji">🐸</div>
-            <div class="label">Frog</div>
-        </div>
-        <div class="emoji-item" data-label="Horse">
-            <div class="emoji">🐴</div>
-            <div class="label">Horse</div>
-        </div>
-        <div class="emoji-item" data-label="Palm Tree">
-            <div class="emoji">🌴</div>
-            <div class="label">Palm Tree</div>
-        </div>
-        <div class="emoji-item" data-label="Violin">
-            <div class="emoji">🎻</div>
-            <div class="label">Violin</div>
-        </div>
-        <div class="emoji-item" data-label="Boot">
-            <div class="emoji">🥾</div>
-            <div class="label">Boot</div>
-        </div>
-        <div class="emoji-item" data-label="Christmas Tree">
-            <div class="emoji">🎄</div>
-            <div class="label">Christmas Tree</div>
-        </div>
-        <div class="emoji-item" data-label="Number 0">
-            <div class="emoji">0️⃣</div>
-            <div class="label">Number 0</div>
-        </div>
-        <div class="emoji-item" data-label="Number 1">
-            <div class="emoji">1️⃣</div>
-            <div class="label">Number 1</div>
-        </div>
-        <div class="emoji-item" data-label="Number 2">
-            <div class="emoji">2️⃣</div>
-            <div class="label">Number 2</div>
-        </div>
-        <div class="emoji-item" data-label="Number 3">
-            <div class="emoji">3️⃣</div>
-            <div class="label">Number 3</div>
-        </div>
-        <div class="emoji-item" data-label="Number 4">
-            <div class="emoji">4️⃣</div>
-            <div class="label">Number 4</div>
-        </div>
-        <div class="emoji-item" data-label="Number 5">
-            <div class="emoji">5️⃣</div>
-            <div class="label">Number 5</div>
-        </div>
-        <div class="emoji-item" data-label="Number 6">
-            <div class="emoji">6️⃣</div>
-            <div class="label">Number 6</div>
-        </div>
-        <div class="emoji-item" data-label="Number 7">
-            <div class="emoji">7️⃣</div>
-            <div class="label">Number 7</div>
-        </div>
-        <div class="emoji-item" data-label="Number 8">
-            <div class="emoji">8️⃣</div>
-            <div class="label">Number 8</div>
-        </div>
-        <div class="emoji-item" data-label="Number 9">
-            <div class="emoji">9️⃣</div>
-            <div class="label">Number 9</div>
-        </div>
-        <div class="emoji-item" data-label="Number 10">
-            <div class="emoji">🔟</div>
-            <div class="label">Number 10</div>
-        </div>
-    </div>
-
-    <div class="controls">
-        <label for="voiceSelect">Choose a voice: </label>
-        <select id="voiceSelect"></select>
     </div>
 
     <script>
+        const emojiContainer = document.getElementById('emojiContainer');
+        const decreaseSizeButton = document.getElementById('decreaseSize');
+        const increaseSizeButton = document.getElementById('increaseSize');
+        const sortAscendingButton = document.getElementById('sortAscending');
+        const sortDescendingButton = document.getElementById('sortDescending');
+
+        let currentSize = 100;
+        const minSize = 50;
+        const maxSize = 200;
+
+        function adjustSize(amount) {
+            currentSize = Math.max(minSize, Math.min(maxSize, currentSize + amount));
+            document.documentElement.style.setProperty('--emoji-size', `${currentSize}px`);
+        }
+
+        function sortEmojis(order) {
+            const items = Array.from(emojiContainer.children);
+            items.sort((a, b) => {
+                const labelA = a.getAttribute('data-label').toLowerCase();
+                const labelB = b.getAttribute('data-label').toLowerCase();
+                return order === 'asc' ? labelA.localeCompare(labelB) : labelB.localeCompare(labelA);
+            });
+            items.forEach(item => emojiContainer.appendChild(item));
+        }
+
+        decreaseSizeButton.addEventListener('click', () => adjustSize(-10));
+        increaseSizeButton.addEventListener('click', () => adjustSize(10));
+        sortAscendingButton.addEventListener('click', () => sortEmojis('asc'));
+        sortDescendingButton.addEventListener('click', () => sortEmojis('desc'));
+
         let voices = [];
 
         function populateVoices() {
