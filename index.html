@@ -42,8 +42,9 @@
 
         .label {
             margin-top: 5px;
-            font-size: 1rem;
+            font-size: calc(var(--emoji-size, 100px) / 6);
             color: #555;
+            text-align: center;
         }
 
         .controls {
@@ -173,7 +174,10 @@
         let voices = [];
 
         function populateVoices() {
-            voices = window.speechSynthesis.getVoices();
+            voices = window.speechSynthesis.getVoices().filter(voice =>
+                voice.lang.startsWith('en') &&
+                (voice.lang.includes('US') || voice.lang.includes('GB') || voice.lang.includes('AU'))
+            );
             const voiceSelect = document.getElementById('voiceSelect');
             voiceSelect.innerHTML = '';
             voices.forEach((voice, index) => {
