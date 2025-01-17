@@ -42,7 +42,7 @@
 
         .label {
             margin-top: 5px;
-            font-size: calc(var(--emoji-size, 100px) / 8);
+            font-size: calc(var(--emoji-size, 100px) / 6);
             color: #555;
             text-align: center;
         }
@@ -52,9 +52,9 @@
         }
 
         select, button {
-            padding: 10px;
+            padding: 5px;
             font-size: 1rem;
-            margin: 10px;
+            margin: 5px;
         }
     </style>
 </head>
@@ -66,6 +66,10 @@
         <button id="increaseSize">+</button>
         <button id="sortAscending">Sort A-Z</button>
         <button id="sortDescending">Sort Z-A</button>
+        <label for="filterSystem">Filter by system: </label>
+        <select id="filterSystem">
+            <option value="all">All</option>
+        </select>
         <label for="voiceSelect">Choose a voice: </label>
         <select id="voiceSelect"></select>
     </div>
@@ -78,49 +82,61 @@
         const increaseSizeButton = document.getElementById('increaseSize');
         const sortAscendingButton = document.getElementById('sortAscending');
         const sortDescendingButton = document.getElementById('sortDescending');
+        const filterSystemSelect = document.getElementById('filterSystem');
 
         let currentSize = 100;
         const minSize = 50;
         const maxSize = 200;
 
         const items = [
-            { symbol: "😊", type: "emoji", label: "Smiling Face" },
-            { symbol: "🦉", type: "emoji", label: "Owl" },
-            { symbol: "🪰", type: "emoji", label: "Fly" },
-            { symbol: "🐝", type: "emoji", label: "Bee" },
-            { symbol: "🐞", type: "emoji", label: "Ladybug" },
-            { symbol: "🦓", type: "emoji", label: "Zebra" },
-            { symbol: "🐙", type: "emoji", label: "Octopus" },
-            { symbol: "🌙", type: "emoji", label: "Moon" },
-            { symbol: "🦀", type: "emoji", label: "Crab" },
-            { symbol: "🦞", type: "emoji", label: "Lobster" },
-                { symbol: "😂", type: "emoji", label: "Face with Tears of Joy" },
-    { symbol: "❤️", type: "emoji", label: "Red Heart" },
-    { symbol: "😍", type: "emoji", label: "Smiling Face with Heart-Eyes" },
-    { symbol: "🤩", type: "emoji", label: "Star-Struck" },
-    { symbol: "😊", type: "emoji", label: "Smiling Face" },
-    { symbol: "🙏", type: "emoji", label: "Folded Hands" },
-    { symbol: "🔥", type: "emoji", label: "Fire" },
-    { symbol: "🥰", type: "emoji", label: "Smiling Face with Hearts" },
-    { symbol: "🤣", type: "emoji", label: "Rolling on the Floor Laughing" },
-    { symbol: "👍", type: "emoji", label: "Thumbs Up" },
-    { symbol: "🎉", type: "emoji", label: "Party Popper" },
-    { symbol: "💔", type: "emoji", label: "Broken Heart" },
-    { symbol: "👏", type: "emoji", label: "Clapping Hands" },
-    { symbol: "🎂", type: "emoji", label: "Birthday Cake" },
-    { symbol: "🥳", type: "emoji", label: "Partying Face" },
-    { symbol: "😎", type: "emoji", label: "Smiling Face with Sunglasses" },
-    { symbol: "🤔", type: "emoji", label: "Thinking Face" },
-    { symbol: "😢", type: "emoji", label: "Crying Face" },
-    { symbol: "🤗", type: "emoji", label: "Hugging Face" },
-    { symbol: "✨", type: "emoji", label: "Sparkles" },
-            { symbol: "https://i.imgur.com/HSPpyK1.png", type: "image", label: "All Done" },
-            { symbol: "https://i.imgur.com/0jBXcNb.png", type: "image", label: "More" }
+            { symbol: "😊", type: "emoji", system: "device",label: "Smiling Face" },
+            { symbol: "🦉", type: "emoji", system: "device",label: "Owl" },
+            { symbol: "🪰", type: "emoji", system: "device",label: "Fly" },
+            { symbol: "🐝", type: "emoji", system: "device",label: "Bee" },
+            { symbol: "🐞", type: "emoji", system: "device",label: "Ladybug" },
+            { symbol: "🦓", type: "emoji", system: "device",label: "Zebra" },
+            { symbol: "🐙", type: "emoji", system: "device",label: "Octopus" },
+            { symbol: "🌙", type: "emoji", system: "device",label: "Moon" },
+            { symbol: "🦀", type: "emoji", system: "device",label: "Crab" },
+            { symbol: "🦞", type: "emoji", system: "device",label: "Lobster" },
+                { symbol: "😂", type: "emoji", system: "device",label: "Face with Tears of Joy" },
+    { symbol: "❤️", type: "emoji", system: "device",label: "Red Heart" },
+    { symbol: "😍", type: "emoji", system: "device",label: "Smiling Face with Heart-Eyes" },
+    { symbol: "🤩", type: "emoji", system: "device",label: "Star-Struck" },
+    { symbol: "😊", type: "emoji", system: "device",label: "Smiling Face" },
+    { symbol: "🙏", type: "emoji", system: "device",label: "Folded Hands" },
+    { symbol: "🔥", type: "emoji", system: "device",label: "Fire" },
+    { symbol: "🥰", type: "emoji", system: "device",label: "Smiling Face with Hearts" },
+    { symbol: "🤣", type: "emoji", system: "device",label: "Rolling on the Floor Laughing" },
+    { symbol: "👍", type: "emoji", system: "device",label: "Thumbs Up" },
+    { symbol: "🎉", type: "emoji", system: "device",label: "Party Popper" },
+    { symbol: "💔", type: "emoji", system: "device",label: "Broken Heart" },
+    { symbol: "👏", type: "emoji", system: "device",label: "Clapping Hands" },
+    { symbol: "🎂", type: "emoji", system: "device",label: "Birthday Cake" },
+    { symbol: "🥳", type: "emoji", system: "device",label: "Partying Face" },
+    { symbol: "😎", type: "emoji", system: "device",label: "Smiling Face with Sunglasses" },
+    { symbol: "🤔", type: "emoji", system: "device",label: "Thinking Face" },
+    { symbol: "😢", type: "emoji", system: "device",label: "Crying Face" },
+    { symbol: "🤗", type: "emoji", system: "device",label: "Hugging Face" },
+    { symbol: "✨", type: "emoji", system: "device",label: "Sparkles" },
+            { symbol: "https://i.imgur.com/HSPpyK1.png", type: "image", system: "plq2g",label: "All Done" },
+            { symbol: "https://i.imgur.com/0jBXcNb.png", type: "image", system: "plq2g",label: "More" }
         ];
 
-        function renderItems() {
+        function populateFilterOptions() {
+            const systems = [...new Set(items.map(item => item.system))];
+            systems.forEach(system => {
+                const option = document.createElement('option');
+                option.value = system;
+                option.textContent = system;
+                filterSystemSelect.appendChild(option);
+            });
+        }
+
+        function renderItems(filter = "all") {
             emojiContainer.innerHTML = '';
-            items.forEach(item => {
+            const filteredItems = filter === "all" ? items : items.filter(item => item.system === filter);
+            filteredItems.forEach(item => {
                 const emojiItem = document.createElement('div');
                 emojiItem.classList.add('emoji-item');
                 emojiItem.setAttribute('data-label', item.label);
@@ -163,13 +179,14 @@
                 const labelB = b.label.toLowerCase();
                 return order === 'asc' ? labelA.localeCompare(labelB) : labelB.localeCompare(labelA);
             });
-            renderItems();
+            renderItems(filterSystemSelect.value);
         }
 
         decreaseSizeButton.addEventListener('click', () => adjustSize(-10));
         increaseSizeButton.addEventListener('click', () => adjustSize(10));
         sortAscendingButton.addEventListener('click', () => sortEmojis('asc'));
         sortDescendingButton.addEventListener('click', () => sortEmojis('desc'));
+        filterSystemSelect.addEventListener('change', () => renderItems(filterSystemSelect.value));
 
         let voices = [];
 
@@ -200,6 +217,7 @@
         window.speechSynthesis.onvoiceschanged = populateVoices;
         populateVoices();
 
+        populateFilterOptions();
         renderItems();
     </script>
 </body>
